@@ -7,7 +7,8 @@ const Pager = ({ value, isActive, className, ...others }) => (
     tabIndex="0"
     role="button"
     className={classnames(className, isActive ? 't-bold' : '')}
-    {...others}>
+    {...others}
+  >
     {value}
   </div>
 );

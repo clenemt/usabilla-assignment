@@ -14,7 +14,7 @@ const feedbacksService = {
 
       throw new Error('Error while fetching items');
     });
-  }
+  },
 };
 
 export default feedbacksService;

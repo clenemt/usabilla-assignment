@@ -10,7 +10,7 @@ import { capitalize } from '../utils/funcs';
 
 import feedbacksService from '../services/feedbacks';
 
-const sortDirections = [ 'desc', 'asc', '' ];
+const sortDirections = ['desc', 'asc', ''];
 
 /**
  * Returns the next sort direction.
@@ -20,7 +20,7 @@ const sortDirections = [ 'desc', 'asc', '' ];
 const getNextSortDirection = (sortDirection) => {
   const index = sortDirections.indexOf(sortDirection) + 1;
   return index > 2 ? sortDirections[0] : sortDirections[index];
-}
+};
 
 /**
  * Returns whether it is a `Desktop` or `Mobile` device.
@@ -33,15 +33,16 @@ const normalizeDevice = (feedback) => {
 /**
  * Only pluck what we need for our state.
  */
-const normalizeFeedbacks = (feedbacks) => feedbacks.map((feedback) => ({
-  id: feedback.id,
-  rating: `${feedback.rating}`,
-  comment: feedback.comment,
-  browser: feedback.computed_browser?.Browser,
-  browserVersion: feedback.computed_browser?.Version,
-  platform: feedback.computed_browser?.Platform,
-  device: normalizeDevice(feedback),
-}));
+const normalizeFeedbacks = (feedbacks) =>
+  feedbacks.map((feedback) => ({
+    id: feedback.id,
+    rating: `${feedback.rating}`,
+    comment: feedback.comment,
+    browser: feedback.computed_browser?.Browser,
+    browserVersion: feedback.computed_browser?.Version,
+    platform: feedback.computed_browser?.Platform,
+    device: normalizeDevice(feedback),
+  }));
 
 /**
  * Returns an alphabetical sort function based on the predicate.
@@ -51,10 +52,10 @@ const normalizeFeedbacks = (feedbacks) => feedbacks.map((feedback) => ({
 const sortByPredicate = (predicate) => (a, b) => {
   const A = a[predicate].toUpperCase();
   const B = b[predicate].toUpperCase();
-  if(A < B) return -1;
-  if(A > B) return 1;
+  if (A < B) return -1;
+  if (A > B) return 1;
   return 0;
-}
+};
 
 /**
  * Common sort functions based on headers.
@@ -68,7 +69,6 @@ const headers = {
 };
 
 class FeedbackList extends React.Component {
-
   constructor(props) {
     super(props);
 
@@ -86,35 +86,38 @@ class FeedbackList extends React.Component {
 
   componentDidMount() {
     // Fetch our feedback items on component mount
-    feedbacksService.get()
-      .then((feedbacks) => {
-        const normalizedFeedbacks = normalizeFeedbacks(feedbacks);
+    feedbacksService.get().then((feedbacks) => {
+      const normalizedFeedbacks = normalizeFeedbacks(feedbacks);
 
-        this.defaultActiveFeedbacks = feedbacks.map((feedback) => feedback.id);
+      this.defaultActiveFeedbacks = feedbacks.map((feedback) => feedback.id);
 
-        // Start our search instance only once
-        this.fuse = new Fuse(normalizedFeedbacks, {
-          keys: ['comment'],
-          id: 'id',
-          threshold: 0.6,
-        });
-
-        // Grab the previous state of the `<FeedbacksPage />`
-        const previousRun = store.get('usabilla');
-
-        this.setState({
-          feedbacks: normalizedFeedbacks,
-          activeFeedbacks: this.defaultActiveFeedbacks,
-          page: previousRun?.page || 0,
-          sortBy: previousRun?.sortBy || '',
-          sortDirection: previousRun?.sortDirection || '',
-        });
+      // Start our search instance only once
+      this.fuse = new Fuse(normalizedFeedbacks, {
+        keys: ['comment'],
+        id: 'id',
+        threshold: 0.6,
       });
+
+      // Grab the previous state of the `<FeedbacksPage />`
+      const previousRun = store.get('usabilla');
+
+      this.setState({
+        feedbacks: normalizedFeedbacks,
+        activeFeedbacks: this.defaultActiveFeedbacks,
+        page: previousRun?.page || 0,
+        sortBy: previousRun?.sortBy || '',
+        sortDirection: previousRun?.sortDirection || '',
+      });
+    });
   }
 
   componentDidUpdate(prevProps, prevState) {
     // Will save to localstorage for a better UX when page reloads
-    if (prevState?.page !== this.state.page || prevState?.sortBy !== this.state.sortBy || prevState?.sortDirection !== this.state.sortDirection) {
+    if (
+      prevState?.page !== this.state.page ||
+      prevState?.sortBy !== this.state.sortBy ||
+      prevState?.sortDirection !== this.state.sortDirection
+    ) {
       store.set('usabilla', {
         page: this.state.page,
         sortBy: this.state.sortBy,
@@ -128,10 +131,12 @@ class FeedbackList extends React.Component {
    * @param {Object} event - React SyntheticEvent.
    */
   onSearch = (event) => {
-    const {sortBy, sortDirection} = this.state;
-    let activeFeedbacks = event.target.value ? this.fuse.search(event.target.value) : this.defaultActiveFeedbacks;
+    const { sortBy, sortDirection } = this.state;
+    let activeFeedbacks = event.target.value
+      ? this.fuse.search(event.target.value)
+      : this.defaultActiveFeedbacks;
 
-    if (sortBy){
+    if (sortBy) {
       activeFeedbacks = this.sortActiveFeedbacks(headers[sortBy], sortDirection, activeFeedbacks);
     }
 
@@ -139,7 +144,7 @@ class FeedbackList extends React.Component {
       page: 0,
       activeFeedbacks,
     });
-  }
+  };
 
   /**
    * Returns a function for toggling the table sort based on the header clicked.
@@ -162,7 +167,7 @@ class FeedbackList extends React.Component {
       activeFeedbacks,
       sortBy: predicate,
     });
-  }
+  };
 
   /**
    * Sort the currently active feedbacks.
@@ -175,9 +180,13 @@ class FeedbackList extends React.Component {
     let nextActiveFeedbacks;
 
     if (!sortDirection) {
-      nextActiveFeedbacks = this.defaultActiveFeedbacks.filter((defaultActiveFeedback) => activeFeedbacks.indexOf(defaultActiveFeedback) !== -1);
+      nextActiveFeedbacks = this.defaultActiveFeedbacks.filter(
+        (defaultActiveFeedback) => activeFeedbacks.indexOf(defaultActiveFeedback) !== -1
+      );
     } else {
-      const feedbacks = activeFeedbacks.map((activeFeedback) => this.state.feedbacks.find((feedback) => feedback.id === activeFeedback));
+      const feedbacks = activeFeedbacks.map((activeFeedback) =>
+        this.state.feedbacks.find((feedback) => feedback.id === activeFeedback)
+      );
       nextActiveFeedbacks = feedbacks.sort(func).map((feedback) => feedback.id);
     }
 
@@ -186,7 +195,7 @@ class FeedbackList extends React.Component {
     }
 
     return nextActiveFeedbacks;
-  }
+  };
 
   /**
    * Render the `<Pager />`.
@@ -196,14 +205,14 @@ class FeedbackList extends React.Component {
     const { page, pageSize, activeFeedbacks } = this.state;
     const numberOfPages = Math.ceil(activeFeedbacks.length / pageSize);
 
-    return Array.from(Array(numberOfPages)).map((a, index) =>
+    return Array.from(Array(numberOfPages)).map((a, index) => (
       <Pager
         key={index}
         value={`${index}`}
         isActive={page === index}
         onClick={() => this.setState({ page: index })}
       />
-    );
+    ));
   }
 
   /**
@@ -211,15 +220,16 @@ class FeedbackList extends React.Component {
    * @return {Node[]}
    */
   renderHeaders() {
-    return Object.keys(headers).map((name, index) =>
+    return Object.keys(headers).map((name, index) => (
       <TableHeader
         key={index}
-        className={name === 'comment' ? 'w-100': 'w-25'}
+        className={name === 'comment' ? 'w-100' : 'w-25'}
         sort={name === this.state.sortBy ? this.state.sortDirection : ''}
-        onClick={this[`toggleSortBy${capitalize(name)}`]}>
+        onClick={this[`toggleSortBy${capitalize(name)}`]}
+      >
         {capitalize(name)}
       </TableHeader>
-    )
+    ));
   }
 
   /**
@@ -230,14 +240,12 @@ class FeedbackList extends React.Component {
     const { page, pageSize, activeFeedbacks, feedbacks } = this.state;
     const paginatedFeedbacks = [];
 
-    for(let i = page * pageSize; i < (page + 1) * pageSize; i++) {
+    for (let i = page * pageSize; i < (page + 1) * pageSize; i++) {
       const feedback = feedbacks.find((feedback) => activeFeedbacks[i] === feedback.id);
       if (!feedback) continue;
 
-      const {id, ...props} = feedback;
-      paginatedFeedbacks.push(
-        <Feedback key={id} {...props} />
-      )
+      const { id, ...props } = feedback;
+      paginatedFeedbacks.push(<Feedback key={id} {...props} />);
     }
 
     return paginatedFeedbacks;
@@ -246,19 +254,13 @@ class FeedbackList extends React.Component {
   render() {
     return (
       <>
-        <input type="text" placeholder="Search feedbacks" onChange={this.onSearch}/>
+        <input type="text" placeholder="Search feedbacks" onChange={this.onSearch} />
 
-        <div className="d-flex">
-          {this.renderPagination()}
-        </div>
+        <div className="d-flex">{this.renderPagination()}</div>
 
-        <div className="d-flex">
-          {this.renderHeaders()}
-        </div>
+        <div className="d-flex">{this.renderHeaders()}</div>
 
-        <div>
-          {this.renderPaginatedFeedbacks()}
-        </div>
+        <div>{this.renderPaginatedFeedbacks()}</div>
       </>
     );
   }
