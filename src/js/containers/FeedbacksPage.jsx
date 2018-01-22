@@ -1,9 +1,14 @@
 import React from 'react';
 import Fuse from 'fuse.js';
 
-import { capitalize } from '../utils/funcs';
-import feedbacksService from '../services/feedbacks';
+import Pager from '../components/Pager';
+import Feedback from '../components/Feedback';
+import TableHeader from '../components/TableHeader';
 
+import store from '../utils/store';
+import { capitalize } from '../utils/funcs';
+
+import feedbacksService from '../services/feedbacks';
 
 const sortDirections = [ 'desc', 'asc', '' ];
 
@@ -30,10 +35,10 @@ const normalizeDevice = (feedback) => {
  */
 const normalizeFeedbacks = (feedbacks) => feedbacks.map((feedback) => ({
   id: feedback.id,
-  rating: feedback.rating,
+  rating: `${feedback.rating}`,
   comment: feedback.comment,
   browser: feedback.computed_browser?.Browser,
-  version: feedback.computed_browser?.Version,
+  browserVersion: feedback.computed_browser?.Version,
   platform: feedback.computed_browser?.Platform,
   device: normalizeDevice(feedback),
 }));
@@ -55,11 +60,11 @@ const sortByPredicate = (predicate) => (a, b) => {
  * Common sort functions based on headers.
  */
 const headers = {
-  rating: (a, b) => a.rating - b.rating,
-  browser: sortByPredicate('browser'),
+  rating: sortByPredicate('rating'),
   comment: sortByPredicate('comment'),
-  platform: sortByPredicate('platform'),
+  browser: sortByPredicate('browser'),
   device: sortByPredicate('device'),
+  platform: sortByPredicate('platform'),
 };
 
 class FeedbackList extends React.Component {
@@ -75,17 +80,12 @@ class FeedbackList extends React.Component {
     this.state = {
       feedbacks: [],
       activeFeedbacks: [],
-      page: 0,
       pageSize: 10,
-      sortBy: '',
-      sortDirection: ''
     };
   }
 
-  /**
-   * Fetch our feedback items on component mount.
-   */
   componentDidMount() {
+    // Fetch our feedback items on component mount
     feedbacksService.get()
       .then((feedbacks) => {
         const normalizedFeedbacks = normalizeFeedbacks(feedbacks);
@@ -99,11 +99,28 @@ class FeedbackList extends React.Component {
           threshold: 0.6,
         });
 
+        // Grab the previous state of the `<FeedbacksPage />`
+        const previousRun = store.get('usabilla');
+
         this.setState({
           feedbacks: normalizedFeedbacks,
           activeFeedbacks: this.defaultActiveFeedbacks,
+          page: previousRun?.page || 0,
+          sortBy: previousRun?.sortBy || '',
+          sortDirection: previousRun?.sortDirection || '',
         });
       });
+  }
+
+  componentDidUpdate(prevProps, prevState) {
+    // Will save to localstorage for a better UX when page reloads
+    if (prevState?.page !== this.state.page || prevState?.sortBy !== this.state.sortBy || prevState?.sortDirection !== this.state.sortDirection) {
+      store.set('usabilla', {
+        page: this.state.page,
+        sortBy: this.state.sortBy,
+        sortDirection: this.state.sortDirection,
+      });
+    }
   }
 
   /**
@@ -111,13 +128,17 @@ class FeedbackList extends React.Component {
    * @param {Object} event - React SyntheticEvent.
    */
   onSearch = (event) => {
+    const {sortBy, sortDirection} = this.state;
     let activeFeedbacks = event.target.value ? this.fuse.search(event.target.value) : this.defaultActiveFeedbacks;
 
-    if (this.state.sortBy){
-      activeFeedbacks = this.sortActiveFeedbacks(headers[this.state.sortBy], this.state.sortDirection, activeFeedbacks);
+    if (sortBy){
+      activeFeedbacks = this.sortActiveFeedbacks(headers[sortBy], sortDirection, activeFeedbacks);
     }
 
-    this.setState({ activeFeedbacks });
+    this.setState({
+      page: 0,
+      activeFeedbacks,
+    });
   }
 
   /**
@@ -167,22 +188,44 @@ class FeedbackList extends React.Component {
     return nextActiveFeedbacks;
   }
 
+  /**
+   * Render the `<Pager />`.
+   * @return {Node[]}
+   */
   renderPagination() {
     const { page, pageSize, activeFeedbacks } = this.state;
     const numberOfPages = Math.ceil(activeFeedbacks.length / pageSize);
 
     return Array.from(Array(numberOfPages)).map((a, index) =>
-      <div
+      <Pager
         key={index}
-        tabIndex="0"
-        role="button"
+        value={`${index}`}
+        isActive={page === index}
         onClick={() => this.setState({ page: index })}
-        className={page === index ? 'active': ''}>
-        {index}
-      </div>
+      />
     );
   }
 
+  /**
+   * Render the `<TableHeader />`.
+   * @return {Node[]}
+   */
+  renderHeaders() {
+    return Object.keys(headers).map((name, index) =>
+      <TableHeader
+        key={index}
+        className={name === 'comment' ? 'w-100': 'w-25'}
+        sort={name === this.state.sortBy ? this.state.sortDirection : ''}
+        onClick={this[`toggleSortBy${capitalize(name)}`]}>
+        {capitalize(name)}
+      </TableHeader>
+    )
+  }
+
+  /**
+   * Only render the currently paginated `<Feedback />`.
+   * @return {Node[]}
+   */
   renderPaginatedFeedbacks() {
     const { page, pageSize, activeFeedbacks, feedbacks } = this.state;
     const paginatedFeedbacks = [];
@@ -191,17 +234,9 @@ class FeedbackList extends React.Component {
       const feedback = feedbacks.find((feedback) => activeFeedbacks[i] === feedback.id);
       if (!feedback) continue;
 
+      const {id, ...props} = feedback;
       paginatedFeedbacks.push(
-        <div key={feedback.id} className="d-flex">
-          <div className="w-25">{feedback.rating}</div>
-          <div className="w-100">{feedback.comment}</div>
-          <div className="w-25">
-            {feedback.browser}
-            {feedback.version}
-          </div>
-          <div className="w-25">{feedback.device}</div>
-          <div className="w-25">{feedback.platform}</div>
-        </div>
+        <Feedback key={id} {...props} />
       )
     }
 
@@ -211,18 +246,19 @@ class FeedbackList extends React.Component {
   render() {
     return (
       <>
-        <input type="text" placeholder="Search feedback" onChange={this.onSearch}/>
-        <div className="d-flex">{this.renderPagination()}</div>
+        <input type="text" placeholder="Search feedbacks" onChange={this.onSearch}/>
 
         <div className="d-flex">
-          <div className="w-25" onClick={this.toggleSortByRating} tabIndex="0" role="button">Rating</div>
-          <div className="w-100" onClick={this.toggleSortByComment} tabIndex="0" role="button">Comment</div>
-          <div className="w-25" onClick={this.toggleSortByBrowser} tabIndex="0" role="button">Browser</div>
-          <div className="w-25" onClick={this.toggleSortByDevice} tabIndex="0" role="button">Device</div>
-          <div className="w-25" onClick={this.toggleSortByPlatform} tabIndex="0" role="button">Platform</div>
+          {this.renderPagination()}
         </div>
 
-        <div>{this.renderPaginatedFeedbacks()}</div>
+        <div className="d-flex">
+          {this.renderHeaders()}
+        </div>
+
+        <div>
+          {this.renderPaginatedFeedbacks()}
+        </div>
       </>
     );
   }

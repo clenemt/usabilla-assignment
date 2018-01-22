@@ -1,13 +1,9 @@
 import React from 'react';
 
-import FeedbackList from './containers/FeedbackList';
+import FeedbacksPage from './containers/FeedbacksPage';
 
-class App extends React.Component {
-  render() {
-    return (
-      <FeedbackList />
-    );
-  }
-}
+const App = () => (
+  <FeedbacksPage />
+);
 
 export default App;
