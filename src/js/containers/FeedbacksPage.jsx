@@ -7,21 +7,11 @@ import Feedback from '../components/Feedback';
 import TableHeader from '../components/TableHeader';
 
 import store from '../utils/store';
-import { capitalize } from '../utils/funcs';
+import { capitalize, getNextFromArray, sortByPredicate } from '../utils/funcs';
 
 import feedbacksService from '../services/feedbacks';
 
 const sortDirections = ['desc', 'asc', ''];
-
-/**
- * Returns the next sort direction.
- * @param  {String} sortDirection - The current sort direction e.g. 'desc'.
- * @return {String}               - The next sort direction.
- */
-const getNextSortDirection = (sortDirection) => {
-  const index = sortDirections.indexOf(sortDirection) + 1;
-  return index > 2 ? sortDirections[0] : sortDirections[index];
-};
 
 /**
  * Returns whether it is a `Desktop` or `Mobile` device.
@@ -46,20 +36,7 @@ const normalizeFeedbacks = (feedbacks) =>
   }));
 
 /**
- * Returns an alphabetical sort function based on the predicate.
- * @param  {String} predicate - The key name.
- * @return {Function}         - The sort function.
- */
-const sortByPredicate = (predicate) => (a, b) => {
-  const A = a[predicate].toUpperCase();
-  const B = b[predicate].toUpperCase();
-  if (A < B) return -1;
-  if (A > B) return 1;
-  return 0;
-};
-
-/**
- * Common sort functions based on headers.
+ * Common sort functions based on headers defined once.
  */
 const headers = {
   rating: sortByPredicate('rating'),
@@ -216,7 +193,7 @@ class FeedbackList extends React.Component {
 
     // If already sorting by predicate get the next sort direction
     if (this.state.sortBy === predicate) {
-      sortDirection = getNextSortDirection(this.state.sortDirection);
+      sortDirection = getNextFromArray(sortDirections, this.state.sortDirection);
     }
 
     if (!sortDirection) {
