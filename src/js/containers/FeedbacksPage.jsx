@@ -2,6 +2,7 @@ import React from 'react';
 import Fuse from 'fuse.js';
 
 import Pager from '../components/Pager';
+import Filter from '../components/Filter';
 import Feedback from '../components/Feedback';
 import TableHeader from '../components/TableHeader';
 
@@ -74,7 +75,7 @@ class FeedbackList extends React.Component {
 
     // Create a method for all type of sort once
     Object.keys(headers).forEach((name) => {
-      this[`toggleSortBy${capitalize(name)}`] = this.toggleSortBy(name, headers[name]);
+      this[`onClickSortBy${capitalize(name)}`] = this.sortBy(name, headers[name]);
     });
 
     this.state = {
@@ -89,6 +90,8 @@ class FeedbackList extends React.Component {
     feedbacksService.get().then((feedbacks) => {
       const normalizedFeedbacks = normalizeFeedbacks(feedbacks);
 
+      // This will be our default active items
+      // usefull for our user to always get back to its initial state
       this.defaultActiveFeedbacks = feedbacks.map((feedback) => feedback.id);
 
       // Start our search instance only once
@@ -101,13 +104,18 @@ class FeedbackList extends React.Component {
       // Grab the previous state of the `<FeedbacksPage />`
       const previousRun = store.get('usabilla');
 
-      this.setState({
-        feedbacks: normalizedFeedbacks,
-        activeFeedbacks: this.defaultActiveFeedbacks,
-        page: previousRun?.page || 0,
-        sortBy: previousRun?.sortBy || '',
-        sortDirection: previousRun?.sortDirection || '',
-      });
+      this.setState(
+        {
+          feedbacks: normalizedFeedbacks,
+          activeFeedbacks: this.defaultActiveFeedbacks,
+          page: previousRun?.page || 0,
+          sortBy: previousRun?.sortBy || '',
+          searchBy: previousRun?.searchBy || '',
+          filterBy: previousRun?.filterBy || [],
+          sortDirection: previousRun?.sortDirection || '',
+        },
+        () => this.filterAndSortFeedbacks(this.state.filterBy, this.state.searchBy)
+      );
     });
   }
 
@@ -116,35 +124,82 @@ class FeedbackList extends React.Component {
     if (
       prevState?.page !== this.state.page ||
       prevState?.sortBy !== this.state.sortBy ||
+      prevState?.filterBy !== this.state.filterBy ||
+      prevState?.searchBy !== this.state.searchBy ||
       prevState?.sortDirection !== this.state.sortDirection
     ) {
       store.set('usabilla', {
         page: this.state.page,
         sortBy: this.state.sortBy,
+        filterBy: this.state.filterBy,
+        searchBy: this.state.searchBy,
         sortDirection: this.state.sortDirection,
       });
     }
   }
 
   /**
-   * Search the `activeFeedbacks` while respecting the active sort.
+   * Triggered when user click any rating filter.
+   * @param {string} value - The rating value.
+   */
+  onFilter = (value) => {
+    const { searchBy, filterBy } = this.state;
+    const newFilterBy = filterBy.slice(0);
+    const index = filterBy.indexOf(value);
+
+    if (index !== -1) {
+      newFilterBy.splice(index, 1);
+    } else {
+      newFilterBy.push(value);
+    }
+
+    this.filterAndSortFeedbacks(newFilterBy, searchBy);
+  };
+
+  /**
+   * Triggered when user type inside search input.
    * @param {Object} event - React SyntheticEvent.
    */
   onSearch = (event) => {
-    const { sortBy, sortDirection } = this.state;
-    let activeFeedbacks = event.target.value
-      ? this.fuse.search(event.target.value)
-      : this.defaultActiveFeedbacks;
+    const { filterBy } = this.state;
+    this.filterAndSortFeedbacks(filterBy, event.target.value);
+  };
 
+  /**
+   * Will first filter by any search query, then filter by rating
+   * and finally sort all feedback items.
+   * @param  {String[]} filterBy - Same as `state.filterBy`.
+   * @param  {String}   searchBy - Same as `state.searchBy`.
+   */
+  filterAndSortFeedbacks(filterBy, searchBy) {
+    const { sortBy, sortDirection, feedbacks, page, pageSize } = this.state;
+    let activeFeedbacks;
+
+    // First filter by search
+    activeFeedbacks = searchBy ? this.fuse.search(searchBy) : this.defaultActiveFeedbacks;
+
+    // Then by rating if needed
+    if (filterBy.length) {
+      activeFeedbacks = activeFeedbacks
+        .map((activeFeedback) => feedbacks.find((feedback) => feedback.id === activeFeedback))
+        .filter((feedback) => filterBy.indexOf(feedback.rating) !== -1)
+        .map((feedback) => feedback.id);
+    }
+
+    // And finally sort it if needed
     if (sortBy) {
       activeFeedbacks = this.sortActiveFeedbacks(headers[sortBy], sortDirection, activeFeedbacks);
     }
 
+    const numberOfPages = Math.ceil(activeFeedbacks.length / pageSize);
+
     this.setState({
-      page: 0,
+      page: page > numberOfPages - 1 ? numberOfPages - 1 : page,
+      filterBy,
+      searchBy,
       activeFeedbacks,
     });
-  };
+  }
 
   /**
    * Returns a function for toggling the table sort based on the header clicked.
@@ -152,15 +207,22 @@ class FeedbackList extends React.Component {
    * @param  {Function}    func - The sort function.
    * @return {Function}         - The bound table sort function.
    */
-  toggleSortBy = (predicate, func) => () => {
+  sortBy = (predicate, func) => () => {
     let sortDirection = sortDirections[0];
+    let activeFeedbacks;
 
     // If already sorting by predicate get the next sort direction
     if (this.state.sortBy === predicate) {
       sortDirection = getNextSortDirection(this.state.sortDirection);
     }
 
-    const activeFeedbacks = this.sortActiveFeedbacks(func, sortDirection);
+    if (!sortDirection) {
+      activeFeedbacks = this.defaultActiveFeedbacks.filter(
+        (defaultActiveFeedback) => this.state.activeFeedbacks.indexOf(defaultActiveFeedback) !== -1
+      );
+    } else {
+      activeFeedbacks = this.sortActiveFeedbacks(func, sortDirection, this.state.activeFeedbacks);
+    }
 
     this.setState({
       sortDirection,
@@ -171,30 +233,26 @@ class FeedbackList extends React.Component {
 
   /**
    * Sort the currently active feedbacks.
-   * @param  {Function}        func - The sort function.
-   * @param  {String} sortDirection - The direction of the sorting e.g. 'asc'
-   * @param  {Object[]} [activeFeedbacks=this.state.activeFeedbacks] - The active feedbacks (optional).
-   * @return {Object[]}             - The sorted active feedbacks.
+   * @param  {Function}            func - The sort function.
+   * @param  {String}     sortDirection - The direction of the sorting e.g. 'asc'
+   * @param  {Object[]} activeFeedbacks - The active feedbacks.
+   * @return {Object[]}                 - The sorted active feedbacks.
    */
-  sortActiveFeedbacks = (func, sortDirection, activeFeedbacks = this.state.activeFeedbacks) => {
-    let nextActiveFeedbacks;
+  sortActiveFeedbacks = (func, sortDirection, activeFeedbacks) => {
+    if (!sortDirection) return activeFeedbacks;
 
-    if (!sortDirection) {
-      nextActiveFeedbacks = this.defaultActiveFeedbacks.filter(
-        (defaultActiveFeedback) => activeFeedbacks.indexOf(defaultActiveFeedback) !== -1
-      );
-    } else {
-      const feedbacks = activeFeedbacks.map((activeFeedback) =>
+    const sortedActiveFeedbacks = activeFeedbacks
+      .map((activeFeedback) =>
         this.state.feedbacks.find((feedback) => feedback.id === activeFeedback)
-      );
-      nextActiveFeedbacks = feedbacks.sort(func).map((feedback) => feedback.id);
-    }
+      )
+      .sort(func)
+      .map((feedback) => feedback.id);
 
     if (sortDirection === 'desc') {
-      nextActiveFeedbacks.reverse();
+      sortedActiveFeedbacks.reverse();
     }
 
-    return nextActiveFeedbacks;
+    return sortedActiveFeedbacks;
   };
 
   /**
@@ -225,7 +283,7 @@ class FeedbackList extends React.Component {
         key={index}
         className={name === 'comment' ? 'w-100' : 'w-25'}
         sort={name === this.state.sortBy ? this.state.sortDirection : ''}
-        onClick={this[`toggleSortBy${capitalize(name)}`]}
+        onClick={this[`onClickSortBy${capitalize(name)}`]}
       >
         {capitalize(name)}
       </TableHeader>
@@ -252,14 +310,20 @@ class FeedbackList extends React.Component {
   }
 
   render() {
+    const { searchBy, filterBy } = this.state;
     return (
       <>
-        <input type="text" placeholder="Search feedbacks" onChange={this.onSearch} />
-
+        <div className="d-flex">
+          <input
+            type="text"
+            placeholder="Search feedbacks"
+            onChange={this.onSearch}
+            value={searchBy}
+          />
+          <Filter onClick={this.onFilter} items={['1', '2', '3', '4', '5']} isActive={filterBy} />
+        </div>
         <div className="d-flex">{this.renderPagination()}</div>
-
         <div className="d-flex">{this.renderHeaders()}</div>
-
         <div>{this.renderPaginatedFeedbacks()}</div>
       </>
     );
