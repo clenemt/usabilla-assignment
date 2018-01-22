@@ -82,6 +82,7 @@ class FeedbackList extends React.Component {
       feedbacks: [],
       activeFeedbacks: [],
       pageSize: 10,
+      searchBy: '',
     };
   }
 
@@ -191,10 +192,12 @@ class FeedbackList extends React.Component {
       activeFeedbacks = this.sortActiveFeedbacks(headers[sortBy], sortDirection, activeFeedbacks);
     }
 
+    // Try to keep current page if possible
     const numberOfPages = Math.ceil(activeFeedbacks.length / pageSize);
+    const newPage = Math.max(0, page > numberOfPages - 1 ? numberOfPages - 1 : page);
 
     this.setState({
-      page: page > numberOfPages - 1 ? numberOfPages - 1 : page,
+      page: newPage,
       filterBy,
       searchBy,
       activeFeedbacks,
