@@ -23,8 +23,8 @@ It only runs **thanks to**:
 
 * [webpack-dev-server](https://github.com/webpack/webpack-dev-server) for the simple http server
 * [axios](https://github.com/axios/axios) for the promise based HTTP client
-* [store.js](http://fusejs.io/) for the Cross-browser storage API
-* [fuse.js](https://github.com/marcuswestin/store.js/) for the fuzzy-search library
+* [store.js](https://github.com/marcuswestin/store.js/) for the Cross-browser storage API
+* [fuse.js](http://fusejs.io/) for the fuzzy-search library
 
 
 ## Guidelines
