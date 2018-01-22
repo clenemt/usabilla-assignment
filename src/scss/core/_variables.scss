@@ -1,0 +1,106 @@
+//
+// Assets
+//
+
+$directory-image: '../../assets/img' !default;
+
+//
+// Color system
+//
+
+$white: #ffffff !default;
+$black: #000000 !default;
+$grey: #d1d1d1 !default;
+$red: #e53935 !default;
+$green: #9ccc65 !default;
+$blue: #ffd54f !default;
+
+$grey-100: #212529 !default;
+$grey-200: #3e3e3e !default;
+$grey-300: #737373 !default;
+$grey-400: #a6a6a6 !default;
+$grey-500: $grey !default;
+$grey-600: #e6e6e6 !default;
+$grey-700: #f6f6f6 !default;
+
+$red-100: darken($red, 10%) !default;
+$red-200: $red !default;
+$red-300: lighten($red, 30%) !default;
+
+$green-100: darken($green, 15%) !default;
+$green-200: $green !default;
+$green-300: lighten($green, 25%) !default;
+
+$blue-100: #ffd54f !default;
+$blue-200: $blue !default;
+$blue-300: lighten($blue, 20%) !default;
+
+$brand-primary: #2b1cab !default;
+$brand-secondary: $black !default;
+
+//
+// Spacing
+//
+
+$spacer: 1rem !default;
+$spacers: (
+    0: 0,
+    1: ($spacer * 0.25),
+    2: ($spacer * 0.5),
+    3: $spacer,
+    4: ($spacer * 1.5),
+    5: ($spacer * 2),
+    6: ($spacer * 3)
+  )
+  !default;
+
+// This variable affects the `.h-*` and `.w-*` classes
+$sizes: (25: 25%, 50: 50%, 75: 75%, 100: 100%) !default;
+
+//
+// Body
+//
+
+$body-bg: $white !default;
+$body-color: $grey-200 !default;
+
+//
+// Links
+//
+
+$link-color: $body-color !default;
+$link-hover-color: darken($link-color, 20%) !default;
+
+//
+// Breakpoints
+//
+
+$breakpoints: (xs: 0, sm: 576px, md: 768px, lg: 992px, xl: 1200px) !default;
+
+//
+// Common component variables
+//
+
+$border-width: 1px !default;
+$border-radius: 0.25rem !default;
+
+//
+// Typography
+//
+
+$font-family-sans-serif: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif !default;
+$font-family-serif: Georgia, 'Times New Roman', Times, serif !default;
+$font-family-monospace: Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace !default;
+$font-family: $font-family-sans-serif !default;
+
+$font-size: 1rem !default;
+$font-size-sm: 0.875rem !default;
+$font-size-lg: 1.25rem !default;
+
+$line-height: 1.5 !default;
+
+//
+// Inputs
+//
+
+$inputs-padding-y: 0.66rem !default;

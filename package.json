@@ -1,0 +1,76 @@
+{
+  "name": "usabilla-assignment",
+  "description": "Simple assigment for Usabilla",
+  "email": "clement.moron@gmail.com",
+  "url": "clenemt.com/usabilla-assignment",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/clenemt/usabilla-assignment.git"
+  },
+  "license": "MIT",
+  "pre-commit": "lint:staged",
+  "lint-staged": {
+    "*.{js,jsx,json,md,scss}": [
+      "prettier --write",
+      "git add"
+    ],
+    "*.{js,jsx}": [
+      "eslint --fix",
+      "git add"
+    ]
+  },
+  "scripts": {
+    "clean": "shx rm  -rf docs",
+    "scaffold": "npm run clean && shx mkdir docs && shx cp -r src/assets docs/assets",
+    "lint": "npm run lint:js",
+    "lint:js": "eslint --ext .jsx,.js .",
+    "lint:staged": "lint-staged",
+    "build": "npm run scaffold && cross-env NODE_ENV=production npm run webpack",
+    "build:dev": "npm run scaffold && npm run webpack",
+    "start": "npm run scaffold && npm run webpack-dev-server",
+    "webpack": "node -r @babel/register ./node_modules/webpack/bin/webpack.js --config=webpack/config.js",
+    "webpack-dev-server": "node -r @babel/register ./node_modules/webpack-dev-server/bin/webpack-dev-server.js --config=webpack/config.js"
+  },
+  "dependencies": {
+    "autoprefixer": "^7.2.5",
+    "axios": "^0.17.1",
+    "classnames": "^2.2.5",
+    "extract-text-webpack-plugin": "^3.0.2",
+    "fuse.js": "^3.2.0",
+    "html-webpack-plugin": "^2.30.1",
+    "postcss-import": "^11.0.0",
+    "prop-types": "^15.6.0",
+    "react": "^16.2.0",
+    "react-dom": "^16.2.0",
+    "store": "^2.0.12",
+    "webpack": "^3.10.0"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.0.0-beta.37",
+    "@babel/plugin-proposal-optional-chaining": "^7.0.0-beta.38",
+    "@babel/preset-env": "^7.0.0-beta.37",
+    "@babel/preset-react": "^7.0.0-beta.37",
+    "@babel/preset-stage-2": "^7.0.0-beta.37",
+    "@babel/register": "^7.0.0-beta.37",
+    "babel-eslint": "^8.2.1",
+    "babel-loader": "8.0.0-beta.0",
+    "cross-env": "^5.1.3",
+    "css-loader": "^0.28.8",
+    "eslint": "^4.15.0",
+    "eslint-config-airbnb": "^16.1.0",
+    "eslint-config-prettier": "^2.9.0",
+    "eslint-plugin-import": "^2.7.0",
+    "eslint-plugin-jsx-a11y": "^6.0.2",
+    "eslint-plugin-prettier": "^2.4.0",
+    "eslint-plugin-react": "^7.4.0",
+    "file-loader": "^1.1.6",
+    "lint-staged": "^6.0.0",
+    "node-sass": "^4.7.2",
+    "postcss-loader": "^2.0.10",
+    "pre-commit": "^1.2.2",
+    "prettier": "^1.10.2",
+    "sass-loader": "^6.0.6",
+    "shx": "^0.2.2",
+    "webpack-dev-server": "^2.11.0"
+  }
+}

@@ -1,0 +1,10 @@
+{
+  "presets": [
+    "@babel/preset-env",
+    "@babel/preset-stage-2",
+    "@babel/preset-react",
+  ],
+  "plugins": [
+    "@babel/plugin-proposal-optional-chaining"
+  ]
+}

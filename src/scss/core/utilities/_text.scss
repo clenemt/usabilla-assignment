@@ -1,0 +1,73 @@
+//
+// Text
+//
+
+// Size
+.t-1 {
+  font-size: $font-size-lg !important;
+}
+.t-2 {
+  font-size: $font-size !important;
+}
+.t-3 {
+  font-size: $font-size-sm !important;
+}
+
+// Alignment
+@each $breakpoint in map-keys($breakpoints) {
+  @include media-breakpoint-up($breakpoint) {
+    $infix: breakpoint-infix($breakpoint);
+
+    .t#{$infix}-left {
+      text-align: left !important;
+    }
+    .t#{$infix}-right {
+      text-align: right !important;
+    }
+    .t#{$infix}-center {
+      text-align: center !important;
+    }
+  }
+}
+
+.t-justify {
+  text-align: justify !important;
+}
+.t-nowrap {
+  white-space: nowrap !important;
+}
+.t-truncate {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+// Transformation
+.t-lowercase {
+  text-transform: lowercase !important;
+}
+.t-uppercase {
+  text-transform: uppercase !important;
+}
+.t-capitalize {
+  text-transform: capitalize !important;
+}
+
+// Decoration
+.t-underline {
+  text-decoration: underline !important;
+}
+.t-none {
+  text-decoration: none !important;
+}
+
+// Weight and italic
+.t-normal {
+  font-weight: normal;
+}
+.t-bold {
+  font-weight: bold;
+}
+.t-italic {
+  font-style: italic;
+}

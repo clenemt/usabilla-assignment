@@ -1,0 +1,40 @@
+{
+  "parser": "babel-eslint",
+  "plugins": [
+    "prettier"                  // https://www.npmjs.com/package/eslint-plugin-prettier
+  ],
+  "env": {                      // http://eslint.org/docs/user-guide/configuring.html#specifying-environments
+    "browser": true,            // browser global variables
+    "node": true,               // node global variables
+    "es6": true                 // es6 variables
+  },
+  "parserOptions": {
+    "ecmaVersion": 6
+  },
+  "extends": [
+    "airbnb",                   // https://github.com/airbnb/javascript/tree/master/packages/eslint-config-airbnb
+    "prettier",                 // https://github.com/prettier/eslint-config-prettier
+    "prettier/react"            // https://github.com/prettier/eslint-config-prettier
+  ],
+
+  "globals": {
+    "__PROD__": true
+  },
+  "rules": {
+    "no-shadow": "off",
+    "no-continue": "off",
+    "no-nested-ternary": "off",
+    "no-param-reassign": "off",
+    "no-plusplus": ["error", { "allowForLoopAfterthoughts": true }],
+    "react/prop-types": "off",
+    "react/no-array-index-key": "off",
+    "react/require-default-props": "off",
+    "jsx-a11y/anchor-is-valid": "off",
+    "jsx-a11y/click-events-have-key-events": "off",
+    "jsx-a11y/label-has-for": [ "error", {
+        "required": {
+            "every": [ "id" ]
+        }
+    }]
+  }
+}
