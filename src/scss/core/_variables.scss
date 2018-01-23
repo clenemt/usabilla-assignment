@@ -13,12 +13,12 @@ $black: #000000 !default;
 $grey: #d1d1d1 !default;
 $red: #e53935 !default;
 $green: #9ccc65 !default;
-$blue: #ffd54f !default;
+$blue: #00a5c9 !default;
 
 $grey-100: #212529 !default;
 $grey-200: #3e3e3e !default;
 $grey-300: #737373 !default;
-$grey-400: #a6a6a6 !default;
+$grey-400: #59636c !default;
 $grey-500: $grey !default;
 $grey-600: #e6e6e6 !default;
 $grey-700: #f6f6f6 !default;
@@ -31,11 +31,11 @@ $green-100: darken($green, 15%) !default;
 $green-200: $green !default;
 $green-300: lighten($green, 25%) !default;
 
-$blue-100: #ffd54f !default;
+$blue-100: #03566a !default;
 $blue-200: $blue !default;
-$blue-300: lighten($blue, 20%) !default;
+$blue-300: #eef3f7 !default;
 
-$brand-primary: #2b1cab !default;
+$brand-primary: $blue !default;
 $brand-secondary: $black !default;
 
 //
@@ -61,8 +61,8 @@ $sizes: (25: 25%, 50: 50%, 75: 75%, 100: 100%) !default;
 // Body
 //
 
-$body-bg: $white !default;
-$body-color: $grey-200 !default;
+$body-bg: $blue-300 !default;
+$body-color: $grey-100 !default;
 
 //
 // Links
@@ -76,6 +76,7 @@ $link-hover-color: darken($link-color, 20%) !default;
 //
 
 $breakpoints: (xs: 0, sm: 576px, md: 768px, lg: 992px, xl: 1200px) !default;
+$container-max-widths: (sm: 540px, md: 720px, lg: 960px, xl: 1140px) !default;
 
 //
 // Common component variables

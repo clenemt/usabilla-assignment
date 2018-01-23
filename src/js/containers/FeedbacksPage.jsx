@@ -29,8 +29,7 @@ const normalizeFeedbacks = (feedbacks) =>
     id: feedback.id,
     rating: `${feedback.rating}`,
     comment: feedback.comment,
-    browser: feedback.computed_browser?.Browser,
-    browserVersion: feedback.computed_browser?.Version,
+    browser: `${feedback.computed_browser?.Browser || ''}\n${feedback.computed_browser?.Version}`,
     platform: feedback.computed_browser?.Platform,
     device: normalizeDevice(feedback),
   }));
@@ -76,7 +75,7 @@ class FeedbackList extends React.Component {
       this.fuse = new Fuse(normalizedFeedbacks, {
         keys: ['comment'],
         id: 'id',
-        threshold: 0.6,
+        threshold: 0.4,
       });
 
       // Grab the previous state of the `<FeedbacksPage />`
@@ -258,10 +257,17 @@ class FeedbackList extends React.Component {
    * @return {Node[]}
    */
   renderHeaders() {
+    const classes = [
+      'w-25',
+      'w-50 w-sm-100',
+      'w-25 t-center',
+      'w-25 t-center d-none d-sm-block',
+      'w-25 t-center',
+    ];
     return Object.keys(headers).map((name, index) => (
       <TableHeader
         key={index}
-        className={name === 'comment' ? 'w-100' : 'w-25'}
+        className={classes[index]}
         sort={name === this.state.sortBy ? this.state.sortDirection : ''}
         onClick={this[`onClickSortBy${capitalize(name)}`]}
       >
@@ -286,6 +292,12 @@ class FeedbackList extends React.Component {
       paginatedFeedbacks.push(<Feedback key={id} {...props} />);
     }
 
+    if (!paginatedFeedbacks.length) {
+      paginatedFeedbacks.push(
+        <Feedback key="empty" comment="No result for your current filters." />
+      );
+    }
+
     return paginatedFeedbacks;
   }
 
@@ -293,18 +305,19 @@ class FeedbackList extends React.Component {
     const { searchBy, filterBy } = this.state;
     return (
       <>
-        <div className="d-flex">
+        <div className="site__filters">
           <input
             type="text"
-            placeholder="Search feedbacks"
+            placeholder="Search here!"
+            className="form-control site__search"
             onChange={this.onSearch}
             value={searchBy}
           />
           <Filter onClick={this.onFilter} items={['1', '2', '3', '4', '5']} isActive={filterBy} />
         </div>
-        <div className="d-flex">{this.renderPagination()}</div>
-        <div className="d-flex">{this.renderHeaders()}</div>
-        <div>{this.renderPaginatedFeedbacks()}</div>
+        <div className="site__headers">{this.renderHeaders()}</div>
+        <div className="feedbacks">{this.renderPaginatedFeedbacks()}</div>
+        <div className="pagers">{this.renderPagination()}</div>
       </>
     );
   }

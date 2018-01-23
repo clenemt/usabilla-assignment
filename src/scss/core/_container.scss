@@ -1,0 +1,8 @@
+.container {
+  width: 100%;
+  margin-left: auto;
+  margin-right: auto;
+  padding-right: map-get($spacers, 2);
+  padding-left: map-get($spacers, 2);
+  @include make-container-max-widths();
+}

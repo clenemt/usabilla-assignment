@@ -6,7 +6,9 @@ const Pager = ({ value, isActive, className, ...others }) => (
   <div
     tabIndex="0"
     role="button"
-    className={classnames(className, isActive ? 't-bold' : '')}
+    className={classnames(className, 'pager', {
+      'pager--active': isActive,
+    })}
     {...others}
   >
     {value}

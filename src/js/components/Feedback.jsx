@@ -2,27 +2,15 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import classnames from 'classnames';
 
-const Feedback = ({
-  id,
-  rating,
-  comment,
-  browser,
-  browserVersion,
-  device,
-  platform,
-  className,
-  ...others
-}) => (
-  <div className={classnames('d-flex', className)} {...others}>
-    <div className="w-25">{rating}</div>
-    <div className="w-100">{comment}</div>
-    <div className="w-25">
-      {browser}
-      <br />
-      {browserVersion}
+const Feedback = ({ id, rating, comment, browser, device, platform, className, ...others }) => (
+  <div className={classnames('feedback', className)} {...others}>
+    <div className="feedback__cell w-25 t-2">
+      {rating && <span className="feedback__rating">{rating}</span>}
     </div>
-    <div className="w-25">{device}</div>
-    <div className="w-25">{platform}</div>
+    <div className="feedback__cell w-50 w-sm-100">{comment}</div>
+    <div className="feedback__cell w-25 t-center">{browser}</div>
+    <div className="feedback__cell w-25 t-center d-none d-sm-block">{device}</div>
+    <div className="feedback__cell w-25 t-center">{platform}</div>
   </div>
 );
 
@@ -32,7 +20,6 @@ Feedback.propTypes = {
   comment: PropTypes.string,
   className: PropTypes.string,
   browser: PropTypes.string,
-  browserVersion: PropTypes.string,
   device: PropTypes.string,
   platform: PropTypes.string,
 };

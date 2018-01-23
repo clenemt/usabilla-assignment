@@ -4,14 +4,16 @@ import classnames from 'classnames';
 import { noop } from '../utils/funcs';
 
 const Filter = ({ isActive, items, className, onClick, ...others }) => (
-  <div className={classnames('d-flex', className)} {...others}>
+  <div className={classnames('filter', className)} {...others}>
     {items.map((item, index) => (
       <div
         key={item?.id || index}
         role="button"
         tabIndex="0"
         onClick={() => onClick(item?.value || item)}
-        className={isActive.indexOf(item?.id || item?.value || item) !== -1 ? 't-bold' : ''}
+        className={classnames('filter__item', {
+          'filter__item--active': isActive.indexOf(item?.id || item?.value || item) !== -1,
+        })}
       >
         {item?.label || item?.value || item}
       </div>
