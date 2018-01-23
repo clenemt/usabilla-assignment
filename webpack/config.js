@@ -1,4 +1,4 @@
-/* eslint no-console: off, no-nested-ternary: off */
+/* eslint no-console: off, import/no-extraneous-dependencies: off */
 
 import path from 'path';
 import webpack from 'webpack';

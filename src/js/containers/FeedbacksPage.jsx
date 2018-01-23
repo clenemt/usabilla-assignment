@@ -9,7 +9,7 @@ import TableHeader from '../components/TableHeader';
 import store from '../utils/store';
 import { capitalize, getNextFromArray, sortByPredicate } from '../utils/funcs';
 
-import feedbacksService from '../services/feedbacks';
+import feedbacksService from '../services/feedbacksService';
 
 const sortDirections = ['desc', 'asc', ''];
 

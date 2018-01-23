@@ -1,3 +1,5 @@
+/* eslint import/no-extraneous-dependencies: off */
+
 import autoprefixer from 'autoprefixer';
 import postcssImport from 'postcss-import';
 import ExtractTextPlugin from 'extract-text-webpack-plugin';
@@ -38,7 +40,7 @@ const js = {
 
     plugins: [
       // https://github.com/babel/babel/tree/master/packages/babel-plugin-syntax-optional-chaining
-      "@babel/plugin-proposal-optional-chaining",
+      '@babel/plugin-proposal-optional-chaining',
     ],
   },
 };

@@ -15,7 +15,7 @@ npm install
 npm run start
 ```
 
-It will install dependencies, build the `docs/` folder and launch a small server at [localhost:9000](http://localhost:9000).
+It will install dependencies and launch a small server at [localhost:9000](http://localhost:9000).
 
 ## Explanation
 
@@ -26,6 +26,14 @@ It only runs **thanks to**:
 * [store.js](https://github.com/marcuswestin/store.js/) for the Cross-browser storage API
 * [fuse.js](http://fusejs.io/) for the fuzzy-search library
 
+Most of the user actions (page, search, sort, filter) are saved to local storage and restored when you reload for a better UX.
+
+Try clicking the nav for some easter egg.
+
+Tests only runs **thanks to**:
+
+* [Jest](https://github.com/facebook/jest) for assertion and test running
+* [Enzyme](https://github.com/airbnb/enzyme) for rendering react components
 
 ## Guidelines
 
@@ -48,6 +56,20 @@ For ease of use you can use the template provided above. The following command w
 git config commit.template .gitmessage
 ```
 
-# License
+## Contributing
+
+To make a build for github pages, do the following:
+
+```sh
+npm run build
+```
+
+Make sure all the tests succeeds before you do so:
+
+```sh
+npm run test
+```
+
+## License
 
 Licensed under [MIT](LICENSE.md).

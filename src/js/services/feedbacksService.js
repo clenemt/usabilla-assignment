@@ -5,7 +5,7 @@ import { endpoints } from '../utils/variables';
 /**
  * Used to fetch the feedbacks from json.
  */
-const feedbacksService = {
+const feedbacks = {
   get() {
     return axios.get(endpoints.feedbacks).then((response) => {
       if (response.data?.items) {
@@ -17,4 +17,4 @@ const feedbacksService = {
   },
 };
 
-export default feedbacksService;
+export default feedbacks;

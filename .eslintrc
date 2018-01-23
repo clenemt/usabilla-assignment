@@ -1,12 +1,14 @@
 {
   "parser": "babel-eslint",
   "plugins": [
-    "prettier"                  // https://www.npmjs.com/package/eslint-plugin-prettier
+    "prettier",                 // https://www.npmjs.com/package/eslint-plugin-prettier
+    "jest"                      // https://www.npmjs.com/package/eslint-plugin-jest
   ],
   "env": {                      // http://eslint.org/docs/user-guide/configuring.html#specifying-environments
     "browser": true,            // browser global variables
     "node": true,               // node global variables
-    "es6": true                 // es6 variables
+    "es6": true,                // es6 variables
+    "jest/globals": true        // jest variables
   },
   "parserOptions": {
     "ecmaVersion": 6
