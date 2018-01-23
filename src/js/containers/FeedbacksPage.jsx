@@ -5,6 +5,7 @@ import Pager from '../components/Pager';
 import Filter from '../components/Filter';
 import Feedback from '../components/Feedback';
 import TableHeader from '../components/TableHeader';
+import FeedbackModal from '../components/FeedbackModal';
 
 import store from '../utils/store';
 import { capitalize, getNextFromArray, sortByPredicate } from '../utils/funcs';
@@ -32,6 +33,8 @@ const normalizeFeedbacks = (feedbacks) =>
     browser: `${feedback.computed_browser?.Browser || ''}\n${feedback.computed_browser?.Version}`,
     platform: feedback.computed_browser?.Platform,
     device: normalizeDevice(feedback),
+    location: feedback.computed_location,
+    images: feedback.images,
   }));
 
 /**
@@ -55,7 +58,6 @@ class FeedbackList extends React.Component {
     });
 
     this.state = {
-      feedbacks: [],
       activeFeedbacks: [],
       pageSize: 10,
       searchBy: '',
@@ -81,9 +83,11 @@ class FeedbackList extends React.Component {
       // Grab the previous state of the `<FeedbacksPage />`
       const previousRun = store.get('usabilla');
 
+      // No need to save feedbacks in state
+      this.feedbacks = normalizedFeedbacks;
+
       this.setState(
         {
-          feedbacks: normalizedFeedbacks,
           activeFeedbacks: this.defaultActiveFeedbacks,
           page: previousRun?.page || 0,
           sortBy: previousRun?.sortBy || '',
@@ -119,7 +123,7 @@ class FeedbackList extends React.Component {
    * Triggered when user click any rating filter.
    * @param {string} value - The rating value.
    */
-  onFilter = (value) => {
+  onClickFilter = (value) => {
     const { searchBy, filterBy } = this.state;
     const newFilterBy = filterBy.slice(0);
     const index = filterBy.indexOf(value);
@@ -143,13 +147,26 @@ class FeedbackList extends React.Component {
   };
 
   /**
+   * Triggered when user click a feedback.
+   * @param {String} id - The feedback id.
+   */
+  onClickFeedback(id) {
+    this.setState({ activeFeedback: id });
+  }
+
+  /**
+   * Triggered when user closes the detail modal.
+   */
+  onCloseModal = () => this.setState({ activeFeedback: '' });
+
+  /**
    * Will first filter by any search query, then filter by rating
    * and finally sort all feedback items.
    * @param  {String[]} filterBy - Same as `state.filterBy`.
    * @param  {String}   searchBy - Same as `state.searchBy`.
    */
   filterAndSortFeedbacks(filterBy, searchBy) {
-    const { sortBy, sortDirection, feedbacks, page, pageSize } = this.state;
+    const { sortBy, sortDirection, page, pageSize } = this.state;
     let activeFeedbacks;
 
     // First filter by search
@@ -158,7 +175,7 @@ class FeedbackList extends React.Component {
     // Then by rating if needed
     if (filterBy.length) {
       activeFeedbacks = activeFeedbacks
-        .map((activeFeedback) => feedbacks.find((feedback) => feedback.id === activeFeedback))
+        .map((activeFeedback) => this.feedbacks.find((feedback) => feedback.id === activeFeedback))
         .filter((feedback) => filterBy.indexOf(feedback.rating) !== -1)
         .map((feedback) => feedback.id);
     }
@@ -221,9 +238,7 @@ class FeedbackList extends React.Component {
     if (!sortDirection) return activeFeedbacks;
 
     const sortedActiveFeedbacks = activeFeedbacks
-      .map((activeFeedback) =>
-        this.state.feedbacks.find((feedback) => feedback.id === activeFeedback)
-      )
+      .map((activeFeedback) => this.feedbacks.find((feedback) => feedback.id === activeFeedback))
       .sort(func)
       .map((feedback) => feedback.id);
 
@@ -281,15 +296,17 @@ class FeedbackList extends React.Component {
    * @return {Node[]}
    */
   renderPaginatedFeedbacks() {
-    const { page, pageSize, activeFeedbacks, feedbacks } = this.state;
+    const { page, pageSize, activeFeedbacks } = this.state;
     const paginatedFeedbacks = [];
 
     for (let i = page * pageSize; i < (page + 1) * pageSize; i++) {
-      const feedback = feedbacks.find((feedback) => activeFeedbacks[i] === feedback.id);
+      const feedback = this.feedbacks.find((feedback) => activeFeedbacks[i] === feedback.id);
       if (!feedback) continue;
 
-      const { id, ...props } = feedback;
-      paginatedFeedbacks.push(<Feedback key={id} {...props} />);
+      const { id, images, location, ...props } = feedback;
+      paginatedFeedbacks.push(
+        <Feedback key={id} onClick={() => this.onClickFeedback(id)} {...props} />
+      );
     }
 
     if (!paginatedFeedbacks.length) {
@@ -302,9 +319,13 @@ class FeedbackList extends React.Component {
   }
 
   render() {
-    const { searchBy, filterBy } = this.state;
+    const { searchBy, filterBy, activeFeedback } = this.state;
+    const feedback =
+      activeFeedback && this.feedbacks.find((feedback) => feedback.id === activeFeedback);
+
     return (
       <>
+        {activeFeedback && <FeedbackModal feedback={feedback} onClose={this.onCloseModal} />}
         <div className="site__filters">
           <input
             type="text"
@@ -313,7 +334,11 @@ class FeedbackList extends React.Component {
             onChange={this.onSearch}
             value={searchBy}
           />
-          <Filter onClick={this.onFilter} items={['1', '2', '3', '4', '5']} isActive={filterBy} />
+          <Filter
+            onClick={this.onClickFilter}
+            items={['1', '2', '3', '4', '5']}
+            isActive={filterBy}
+          />
         </div>
         <div className="site__headers">{this.renderHeaders()}</div>
         <div className="feedbacks">{this.renderPaginatedFeedbacks()}</div>

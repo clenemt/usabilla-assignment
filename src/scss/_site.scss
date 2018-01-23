@@ -138,9 +138,20 @@
   background: $white;
   font-size: $font-size-sm;
   color: $grey-300;
+  cursor: pointer;
 
-  &:not(:last-child) {
-    border-bottom: $border-width solid $grey-600;
+  &:not(:first-child) {
+    border-top: $border-width solid $grey-600;
+  }
+
+  &:hover {
+    color: $grey-200;
+    background: $grey-700;
+    border-top-color: $grey-500;
+  }
+
+  &:hover + .feedback {
+    border-top-color: $grey-500;
   }
 }
 

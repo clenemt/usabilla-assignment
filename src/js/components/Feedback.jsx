@@ -2,7 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import classnames from 'classnames';
 
-const Feedback = ({ id, rating, comment, browser, device, platform, className, ...others }) => (
+const Feedback = ({ rating, comment, browser, device, platform, className, ...others }) => (
   <div className={classnames('feedback', className)} {...others}>
     <div className="feedback__cell w-25 t-2">
       {rating && <span className="feedback__rating">{rating}</span>}
@@ -15,7 +15,6 @@ const Feedback = ({ id, rating, comment, browser, device, platform, className, .
 );
 
 Feedback.propTypes = {
-  id: PropTypes.string,
   rating: PropTypes.string,
   comment: PropTypes.string,
   className: PropTypes.string,

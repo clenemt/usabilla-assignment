@@ -1,0 +1,100 @@
+//
+// Modal
+//
+
+.modal-open {
+  overflow: hidden;
+}
+
+.modal {
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  z-index: 2;
+  overflow: hidden;
+  // Prevent Chrome on Windows from adding a focus outline. For details, see
+  // https://github.com/twbs/bootstrap/pull/10951.
+  outline: 0;
+
+  .modal-open & {
+    overflow-x: hidden;
+    overflow-y: auto;
+  }
+}
+
+.modal__dialog {
+  position: relative;
+  width: auto;
+  margin: $spacer * 0.5;
+  pointer-events: none;
+
+  @include media-breakpoint-up(sm) {
+    max-width: 500px;
+    margin: $spacer * 1.5 auto;
+  }
+}
+
+.modal__content {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  width: 100%; // Ensure `.modal-content` extends the full width of the parent `.modal-dialog`
+  pointer-events: auto; // counteract the pointer-events: none; in the .modal-dialog
+  background-color: $white;
+  background-clip: padding-box;
+  border: $border-width solid $grey-300;
+  border-radius: $border-radius;
+  outline: 0;
+}
+
+.modal__body {
+  position: relative;
+  // Enable `flex-grow: 1` so that the body take up as much space as possible
+  // when should there be a fixed height on `.modal-dialog`.
+  flex: 1 1 auto;
+  padding: $spacer;
+}
+
+.modal__backdrop {
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  z-index: 1;
+  background-color: $black;
+  opacity: 0.5;
+}
+
+.modal__header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  padding: $spacer;
+  border-bottom: $border-width solid $grey-600;
+  border-top-left-radius: $border-radius;
+}
+
+.modal__close {
+  padding: $spacer;
+  // auto on the left force icon to the right
+  margin: (-$spacer) (-$spacer) (-$spacer) auto;
+  background-color: transparent;
+  border: 0;
+  -webkit-appearance: none;
+  cursor: pointer;
+  font-size: 1.5rem;
+  font-weight: bold;
+  line-height: 1;
+  color: $black;
+  text-shadow: 0 1px 0 #fff;
+  opacity: 0.5;
+
+  &:hover {
+    color: $black;
+    text-decoration: none;
+    opacity: 0.75;
+  }
+}
