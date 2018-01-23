@@ -8,9 +8,9 @@ const Feedback = ({ id, rating, comment, browser, device, platform, className, .
       {rating && <span className="feedback__rating">{rating}</span>}
     </div>
     <div className="feedback__cell w-50 w-sm-100">{comment}</div>
-    <div className="feedback__cell w-25 t-center">{browser}</div>
-    <div className="feedback__cell w-25 t-center d-none d-sm-block">{device}</div>
-    <div className="feedback__cell w-25 t-center">{platform}</div>
+    <div className="feedback__cell w-25 t-center t-truncate t-pre">{browser}</div>
+    <div className="feedback__cell w-25 t-center t-truncate d-none d-sm-block">{device}</div>
+    <div className="feedback__cell w-25 t-center t-truncate">{platform}</div>
   </div>
 );
 

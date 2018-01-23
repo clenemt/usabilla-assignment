@@ -30,12 +30,19 @@
   }
 }
 
+// Misc
 .t-justify {
   text-align: justify !important;
 }
+
 .t-nowrap {
   white-space: nowrap !important;
 }
+
+.t-pre {
+  white-space: pre !important;
+}
+
 .t-truncate {
   overflow: hidden;
   text-overflow: ellipsis;

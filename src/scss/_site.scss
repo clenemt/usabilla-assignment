@@ -147,12 +147,6 @@
 .feedback__cell {
   padding: $spacer $spacer $spacer 0;
 
-  &:not(:first-child) {
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: pre;
-  }
-
   &:first-child {
     padding-left: $spacer;
   }
