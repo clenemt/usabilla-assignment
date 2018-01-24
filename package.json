@@ -27,11 +27,9 @@
     "lint:staged": "lint-staged",
     "test": "jest",
     "coverage": "jest --coverage",
-    "build": "npm run scaffold && cross-env NODE_ENV=production npm run webpack",
-    "build:dev": "npm run scaffold && npm run webpack",
-    "start": "npm run scaffold && npm run webpack-dev-server",
-    "webpack": "node -r @babel/register ./node_modules/webpack/bin/webpack.js --config=webpack/config.js",
-    "webpack-dev-server": "node -r @babel/register ./node_modules/webpack-dev-server/bin/webpack-dev-server.js --config=webpack/config.js"
+    "build": "npm run scaffold && webpack -p --env.prod --progress",
+    "stats": "webpack -p --env.prod --env.analyze --env.verbose --progress",
+    "start": "npm run scaffold && webpack-dev-server --progress"
   },
   "dependencies": {
     "axios": "^0.17.1",
@@ -55,7 +53,6 @@
     "babel-eslint": "^8.2.1",
     "babel-jest": "^22.1.0",
     "babel-loader": "8.0.0-beta.0",
-    "cross-env": "^5.1.3",
     "css-loader": "^0.28.8",
     "enzyme": "^3.3.0",
     "enzyme-adapter-react-16": "^1.1.1",
@@ -82,6 +79,7 @@
     "shx": "^0.2.2",
     "style-loader": "^0.19.1",
     "webpack": "^3.10.0",
+    "webpack-bundle-analyzer": "^2.9.2",
     "webpack-dev-server": "^2.11.0"
   }
 }

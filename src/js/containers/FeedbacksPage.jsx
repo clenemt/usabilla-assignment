@@ -33,7 +33,6 @@ const normalizeFeedbacks = (feedbacks) =>
     browser: `${feedback.computed_browser?.Browser || ''}\n${feedback.computed_browser?.Version}`,
     platform: feedback.computed_browser?.Platform,
     device: normalizeDevice(feedback),
-    location: feedback.computed_location,
     images: feedback.images,
   }));
 
@@ -303,7 +302,7 @@ class FeedbackList extends React.Component {
       const feedback = this.feedbacks.find((feedback) => activeFeedbacks[i] === feedback.id);
       if (!feedback) continue;
 
-      const { id, images, location, ...props } = feedback;
+      const { id, images, ...props } = feedback;
       paginatedFeedbacks.push(
         <Feedback key={id} onClick={() => this.onClickFeedback(id)} {...props} />
       );
