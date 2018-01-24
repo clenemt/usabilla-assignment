@@ -82,6 +82,13 @@ const config = {
     // https://medium.com/webpack/webpack-3-official-release-15fd2dd8f07b
     ...(isDebug ? [] : [new webpack.optimize.ModuleConcatenationPlugin()]),
 
+    // To have HMR running
+    // https://github.com/webpack/webpack/issues/1151
+    ...(isDebug ? [new webpack.HotModuleReplacementPlugin()] : []),
+
+    // Add module names to factory functions so they appear in browser profiler
+    ...(isDebug ? [new webpack.NamedModulesPlugin()] : []),
+
     new HtmlWebpackPlugin({
       title: 'Usabilla assignment',
       template: path.resolve(__dirname, '../src/index.html'),
@@ -105,17 +112,40 @@ const config = {
   // https://webpack.github.io/docs/configuration.html#node
   // https://github.com/webpack/node-libs-browser/tree/master/mock
   node: {
+    dgram: 'empty',
     fs: 'empty',
     net: 'empty',
     tls: 'empty',
+    child_process: 'empty',
+  },
+
+  // Turn off performance hints during development because we don't do any
+  // splitting or minification in interest of speed. These warnings become
+  // cumbersome.
+  performance: {
+    hints: isDebug ? false : 'warning',
   },
 
   // Config for webpack dev server plugin (small http-server)
   // https://webpack.js.org/configuration/dev-server/
   devServer: {
     port: 9000,
+
+    // Output running progress to console
+    // https://webpack.js.org/configuration/dev-server/#devserver-progress-cli-only
     progress: isDebug,
-    open: !isDebug,
+
+    // Shows a full-screen overlay in the browser when there are compiler errors or warnings.
+    // https://webpack.js.org/configuration/dev-server/#devserver-overlay
+    overlay: true,
+
+    // When open is enabled, the dev server will open the browser
+    // https://webpack.js.org/configuration/dev-server/#devserver-open
+    open: isDebug,
+
+    // Webpack's Hot Module Replacement feature
+    // https://webpack.js.org/configuration/dev-server/#devserver-hot
+    hot: isDebug,
 
     // Allow serving routes without going through index.html all the time
     // https://webpack.js.org/configuration/dev-server/#devserver-historyapifallback
@@ -131,13 +161,13 @@ const config = {
 
     // Enable gzip compression for everything served
     // https://webpack.js.org/configuration/dev-server/#devserver-compress
-    compress: isDebug,
+    compress: true,
 
     // https://webpack.js.org/configuration/dev-server/#devserver-clientloglevel
-    clientLogLevel: isVerbose ? 'info' : isDebug ? 'warning' : 'error',
+    clientLogLevel: isVerbose ? 'info' : 'none',
 
     // https://webpack.js.org/configuration/dev-server/#devserver-noinfo-
-    noInfo: !isDebug,
+    noInfo: !isVerbose,
   },
 };
 

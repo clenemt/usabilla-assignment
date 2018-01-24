@@ -4,7 +4,7 @@ import Confetti from 'react-dom-confetti';
 import Nav from './components/Nav';
 import FeedbacksPage from './containers/FeedbacksPage';
 
-import { assetsUrl } from './utils/variables';
+import dashboard from '../assets/img/dashboard.svg';
 
 class App extends React.Component {
   constructor() {
@@ -20,13 +20,7 @@ class App extends React.Component {
     return (
       <>
         <Nav className="site__nav">
-          <img
-            src={`${assetsUrl}/img/dashboard.svg`}
-            alt="Dashboard"
-            className="site__icon"
-            height="16px"
-            width="16px"
-          />
+          <img src={dashboard} alt="Dashboard" className="site__icon" height="16px" width="16px" />
           <Confetti
             active={this.state.wowFactor}
             config={{

@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-import { endpoints } from '../utils/variables';
+import endpoints from '../utils/variables';
 
 /**
  * Used to fetch the feedbacks from json.

@@ -10,12 +10,18 @@
   "license": "MIT",
   "pre-commit": "lint:staged",
   "lint-staged": {
-    "*.{js,jsx,json,md,scss}": ["prettier --write", "git add"],
-    "*.{js,jsx}": ["eslint --fix", "git add"]
+    "*.{js,jsx,json,md,scss}": [
+      "prettier --write",
+      "git add"
+    ],
+    "*.{js,jsx}": [
+      "eslint --fix",
+      "git add"
+    ]
   },
   "scripts": {
     "clean": "shx rm -rf docs",
-    "scaffold": "npm run clean && shx mkdir docs && shx cp -r src/assets docs/assets",
+    "scaffold": "npm run clean && shx mkdir docs && shx cp -r src/data docs/data",
     "lint": "npm run lint:js",
     "lint:js": "eslint --ext .jsx,.js .",
     "lint:staged": "lint-staged",
@@ -24,10 +30,8 @@
     "build": "npm run scaffold && cross-env NODE_ENV=production npm run webpack",
     "build:dev": "npm run scaffold && npm run webpack",
     "start": "npm run scaffold && npm run webpack-dev-server",
-    "webpack":
-      "node -r @babel/register ./node_modules/webpack/bin/webpack.js --config=webpack/config.js",
-    "webpack-dev-server":
-      "node -r @babel/register ./node_modules/webpack-dev-server/bin/webpack-dev-server.js --config=webpack/config.js"
+    "webpack": "node -r @babel/register ./node_modules/webpack/bin/webpack.js --config=webpack/config.js",
+    "webpack-dev-server": "node -r @babel/register ./node_modules/webpack-dev-server/bin/webpack-dev-server.js --config=webpack/config.js"
   },
   "dependencies": {
     "axios": "^0.17.1",
@@ -76,6 +80,7 @@
     "regenerator-runtime": "^0.11.1",
     "sass-loader": "^6.0.6",
     "shx": "^0.2.2",
+    "style-loader": "^0.19.1",
     "webpack": "^3.10.0",
     "webpack-dev-server": "^2.11.0"
   }

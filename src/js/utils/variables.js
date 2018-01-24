@@ -3,12 +3,8 @@
  * Makes it easy to refactor.
  */
 
-const baseUrl = __PROD__ ? 'https://static.usabilla.com/' : '/assets/';
+const baseEndpointsUrl = __PROD__ ? 'https://static.usabilla.com/' : '/data/';
 
-export const endpoints = {
-  feedbacks: `${baseUrl}recruitment/apidemo.json`,
+export default {
+  feedbacks: `${baseEndpointsUrl}recruitment/apidemo.json`,
 };
-
-export const assetsUrl = __PROD__
-  ? 'https://clenemt.github.io/usabilla-assignment/assets/'
-  : '/assets/';
