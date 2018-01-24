@@ -4,7 +4,8 @@ import PropTypes from 'prop-types';
 
 import { noop } from '../utils/funcs';
 
-const modalRoot = document.getElementById('modal-root');
+const modalRoot = document.createElement('div');
+document.body.appendChild(modalRoot);
 
 class Modal extends React.Component {
   constructor(props) {
