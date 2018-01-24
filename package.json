@@ -32,6 +32,7 @@
     "start": "npm run scaffold && webpack-dev-server --progress"
   },
   "dependencies": {
+    "@babel/polyfill": "^7.0.0-beta.38",
     "axios": "^0.17.1",
     "classnames": "^2.2.5",
     "fuse.js": "^3.2.0",

@@ -33,8 +33,10 @@ const config = (env) => {
           '@babel/preset-env',
           {
             modules: isDev ? 'commonjs' : false,
+            useBuiltIns: isDev ? false : 'usage',
           },
         ],
+
         // Experimental ECMAScript proposals
         // https://babeljs.io/docs/plugins/preset-stage-2/
         '@babel/preset-stage-2',
@@ -223,7 +225,7 @@ const config = (env) => {
     // splitting or minification in interest of speed. These warnings become
     // cumbersome.
     performance: {
-      hints: isDev ? false : 'error',
+      hints: isDev ? false : 'warning',
     },
 
     // Config for webpack dev server plugin (small http-server)
