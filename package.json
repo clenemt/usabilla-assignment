@@ -20,10 +20,7 @@
     ]
   },
   "scripts": {
-    "clean": "shx rm -rf docs",
-    "scaffold": "npm run clean && shx mkdir docs && shx cp -r src/data docs/data",
-    "lint": "npm run lint:js",
-    "lint:js": "eslint --ext .jsx,.js .",
+    "scaffold": "shx rm -rf docs && shx mkdir docs && shx cp -r src/data docs/data",
     "lint:staged": "lint-staged",
     "test": "jest",
     "coverage": "jest --coverage",
@@ -32,7 +29,6 @@
     "start": "npm run scaffold && webpack-dev-server --progress"
   },
   "dependencies": {
-    "@babel/polyfill": "^7.0.0-beta.38",
     "axios": "^0.17.1",
     "classnames": "^2.2.5",
     "fuse.js": "^3.2.0",
@@ -45,10 +41,11 @@
   "devDependencies": {
     "@babel/core": "^7.0.0-beta.38",
     "@babel/plugin-proposal-optional-chaining": "^7.0.0-beta.38",
+    "@babel/polyfill": "^7.0.0-beta.38",
     "@babel/preset-env": "^7.0.0-beta.37",
     "@babel/preset-react": "^7.0.0-beta.37",
     "@babel/preset-stage-2": "^7.0.0-beta.37",
-    "@babel/register": "^7.0.0-beta.37",
+    "@babel/register": "^7.0.0-beta.38",
     "autoprefixer": "^7.2.5",
     "babel-core": "^7.0.0-0",
     "babel-eslint": "^8.2.1",
@@ -75,7 +72,6 @@
     "postcss-loader": "^2.0.10",
     "pre-commit": "^1.2.2",
     "prettier": "^1.10.2",
-    "regenerator-runtime": "^0.11.1",
     "sass-loader": "^6.0.6",
     "shx": "^0.2.2",
     "style-loader": "^0.19.1",

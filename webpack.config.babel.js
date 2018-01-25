@@ -18,11 +18,13 @@ const config = (env) => {
     loader: 'babel-loader',
     exclude: /(node_modules|bower_components)/,
     query: {
+      // Faster build thanks to caching
       // https://github.com/babel/babel-loader#options
       cacheDirectory: isDev,
 
-      // This is disabled so that we can use es6 inside the `config.js` which uses the `.babelrc` file.
-      // The webpack uses this config to add more configs for prod or dev
+      // The `.babelrc` is only used by babel to transpile the webpack config from es6 to es5
+      // Why? It would not work with the `.babelrc` env option because the "prod" would have
+      // `"modules": false` to enable tree shaking which will break the webapck config (import statements not transpiled)
       // https://babeljs.io/docs/usage/options/
       babelrc: false,
 
@@ -55,8 +57,7 @@ const config = (env) => {
   };
 
   // Small helper to switch between inline css and
-  // extract css to bundle in debug mode.
-  // Allows for HMR action
+  // extract css to bundle. Enables HMR for css.
   const extractStyles = (loaders) => {
     if (!isDev) {
       return ExtractTextPlugin.extract({
@@ -146,13 +147,13 @@ const config = (env) => {
 
     // Precise control of what bundle information gets displayed
     // https://webpack.js.org/configuration/stats/
-    stats: isVerbose ? 'verbose' : isDev ? 'normal' : 'minimal',
+    stats: isVerbose ? 'verbose' : 'normal',
 
     plugins: [
       // Extract webpack css into its own bundle.css
       // https://webpack.js.org/plugins/extract-text-webpack-plugin/
       new ExtractTextPlugin({
-        filename: `[name].css`,
+        filename: `[name].css?[contenthash]`,
         allChunks: true,
       }),
 
@@ -176,10 +177,27 @@ const config = (env) => {
             }),
           ]),
 
+      // Simplifies creation of HTML files to serve your webpack bundles
+      // https://github.com/jantimon/html-webpack-plugin
       new HtmlWebpackPlugin({
         title: 'Usabilla assignment',
         template: path.resolve(__dirname, 'src/index.html'),
       }),
+
+      // Avoid rebuilding bundles because of new module names
+      // https://webpack.js.org/guides/caching/
+      ...(isDev ? [] : [new webpack.HashedModuleIdsPlugin()]),
+
+      // Move all `node_modules` inside vendor bundle
+      // https://webpack.js.org/guides/caching/
+      new webpack.optimize.CommonsChunkPlugin({
+        name: 'vendor',
+        minChunks: (module) => module.context && module.context.indexOf('node_modules') !== -1,
+      }),
+
+      // Avoid invalidating cache if only webpack files changed
+      // https://webpack.js.org/guides/caching/
+      new webpack.optimize.CommonsChunkPlugin({ name: 'manifest' }),
 
       // Scope Hoisting
       // https://medium.com/webpack/webpack-3-official-release-15fd2dd8f07b
@@ -188,10 +206,6 @@ const config = (env) => {
       // To have HMR running
       // https://github.com/webpack/webpack/issues/1151
       ...(isDev ? [new webpack.HotModuleReplacementPlugin()] : []),
-
-      // Add module names to factory functions so they appear in browser profiler
-      // https://webpack.js.org/plugins/named-modules-plugin/
-      ...(isDev ? [new webpack.NamedModulesPlugin()] : []),
 
       // Enable analyzing bundles
       // https://github.com/webpack-contrib/webpack-bundle-analyzer
@@ -265,9 +279,11 @@ const config = (env) => {
       // https://webpack.js.org/configuration/dev-server/#devserver-compress
       compress: true,
 
+      // Will show in console when HMR kicks in if enabled
       // https://webpack.js.org/configuration/dev-server/#devserver-clientloglevel
       clientLogLevel: isVerbose ? 'info' : 'none',
 
+      // No need for webpack bundle info in dev mode
       // https://webpack.js.org/configuration/dev-server/#devserver-noinfo-
       noInfo: !isVerbose,
     },
