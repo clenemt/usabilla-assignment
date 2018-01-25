@@ -70,6 +70,12 @@ Make sure all the tests succeeds before you do so:
 npm run test
 ```
 
+Check the created bundles for inconsistencies with:
+
+```sh
+npm run stats
+```
+
 ## License
 
 Licensed under [MIT](LICENSE.md).

@@ -52,6 +52,10 @@ const config = (env) => {
         // Allows for optional chaining through `?.`
         // https://github.com/babel/babel/tree/master/packages/babel-plugin-syntax-optional-chaining
         '@babel/plugin-proposal-optional-chaining',
+
+        // Enables HMR on react components
+        // https://github.com/gaearon/react-hot-loader
+        'react-hot-loader/babel',
       ],
     },
   };
@@ -200,6 +204,7 @@ const config = (env) => {
       new webpack.optimize.CommonsChunkPlugin({ name: 'manifest' }),
 
       // Scope Hoisting
+      // Breaks bundle analyzer for now hence the `isAnalyze` check
       // https://medium.com/webpack/webpack-3-official-release-15fd2dd8f07b
       ...(isDev || isAnalyze ? [] : [new webpack.optimize.ModuleConcatenationPlugin()]),
 

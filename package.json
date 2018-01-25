@@ -36,6 +36,7 @@
     "react": "^16.2.0",
     "react-dom": "^16.2.0",
     "react-dom-confetti": "^0.0.8",
+    "react-hot-loader": "^4.0.0-beta.17",
     "store": "^2.0.12"
   },
   "devDependencies": {

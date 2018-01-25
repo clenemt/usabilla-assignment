@@ -1,4 +1,5 @@
 import React from 'react';
+import { hot } from 'react-hot-loader';
 import Confetti from 'react-dom-confetti';
 
 import Nav from './components/Nav';
@@ -43,4 +44,4 @@ class App extends React.Component {
   }
 }
 
-export default App;
+export default hot(module)(App);
